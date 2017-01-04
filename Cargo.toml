@@ -1,6 +1,6 @@
 [package]
 name = "rust-multihash"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ross Schulman <ross@rbs.io>"]
 
 [dependencies]
