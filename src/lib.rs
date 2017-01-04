@@ -11,6 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+//
+// Modified 2016-2017 by Andrew Chin <achin@eminence32.net>
+// Modifications already released under the Apache License, Version 2.0
 
 use std::error::Error;
 
