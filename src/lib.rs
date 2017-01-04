@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#![feature(convert)]
+use std::error::Error;
 
 extern crate openssl;
 
-use openssl::crypto::hash::{hash, Type};
+use openssl::hash::{hash, MessageDigest};
 
 /// List of types currently supported in Multihash.
 /// SHA3, Blake2b, and Blake2s are not yet supported in OpenSSL, so are not available in rust-multihash.
@@ -67,15 +67,15 @@ impl HashTypes {
 /// let digest = multihash(HashTypes::SHA2512, testphrase.to_vec());
 /// ```
 pub fn multihash(wanthash: HashTypes, input: Vec<u8>) -> Result<Vec<u8>, String> {
-    let ssl_hash: Option<Type> = match wanthash {
-        HashTypes::SHA1 => Some(Type::SHA1),
-        HashTypes::SHA2256 => Some(Type::SHA256),
-        HashTypes::SHA2512 => Some(Type::SHA512),
+    let ssl_hash: Option<MessageDigest> = match wanthash {
+        HashTypes::SHA1 => Some(MessageDigest::sha1()),
+        HashTypes::SHA2256 => Some(MessageDigest::sha256()),
+        HashTypes::SHA2512 => Some(MessageDigest::sha512()),
         _ => None,
     };
     match ssl_hash {
         Some(openssl_type) => {
-            let mut temphash = hash(openssl_type, input.as_slice());
+            let mut temphash = hash(openssl_type, input.as_slice()).map_err(|e| e.description().to_owned())?;
             let length = temphash.len() as u8;
             temphash.insert(0, length);
             temphash.insert(0, wanthash.to_u8()); // Add the hashtype to the hash.
@@ -88,17 +88,18 @@ pub fn multihash(wanthash: HashTypes, input: Vec<u8>) -> Result<Vec<u8>, String>
 #[cfg(test)]
 mod test {
     use super::{HashTypes, multihash};
-    use openssl::crypto::hash::{hash, Type};
+    use openssl::hash::{hash, MessageDigest};
 
     #[test]
     fn test1() {
-        let example = b"Hello World";
-        let mut result = hash(Type::SHA256, example);
+        let example = b"hello world";
+        let mut result = hash(MessageDigest::sha256(), example).unwrap();
         let length = result.len() as u8;
         result.insert(0, 0x12);
         result.insert(1, length);
 
         assert_eq!(multihash(HashTypes::SHA2256, example.to_vec()).unwrap(), result);
+        println!("hello world hashes to: {:?}", result);
 
         assert_eq!(HashTypes::from_u8(0x12), Some(HashTypes::SHA2256));
         assert_eq!(HashTypes::from_u8(0x01), None);
