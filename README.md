@@ -1,7 +1,7 @@
 Multihash for Rust
 =====
 
-rust-multihash is an implementation of the [multihash algorithm](https://github.com/jbenet/go-multihash) that allows for multiple different hash algorithms to be contained in the same format. This makes it extensible as new hashing algorithms are added.
+rust-multihash is an implementation of the [multihash algorithm](https://github.com/multiformats/multihash) that allows for multiple different hash algorithms to be contained in the same format. This makes it extensible as new hashing algorithms are added.
 
 To use, add `rust-multihash= "*"` to your `Cargo.toml` file.
 
